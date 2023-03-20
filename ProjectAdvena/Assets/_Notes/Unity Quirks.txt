@@ -1,0 +1,5 @@
+Scene-When you're using "V" to perfectly aling a meshes' vertex on another mesh but as a group.
+1. Select GameObject from Hierarchy.
+2. Click Scene Window (not the actual scene, just the border/tab).
+3. Move/Rotate Scene View camera.
+4. You're now able to use "V" for vertex snapping.
