@@ -8,6 +8,7 @@ TagManager:
   - PlayerHead
   - PlayerLegs
   - PlayerArms
+  - PlayerFinal
   layers:
   - Default
   - TransparentFX

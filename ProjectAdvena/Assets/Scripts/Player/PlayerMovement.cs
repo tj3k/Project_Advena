@@ -1,27 +1,35 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public AudioManager playerAudio;
+    
     // Variables for using Rigidbody for movement instead.
     private Rigidbody _rigidbody;
 
     public float airDrag;
     public float groundDrag;
 
+    // Variables for jumping
+    public float jumpForce, jumpCooldown, airMultiplier;
+    private bool _readyToJump;
+
     [Header("GroundCheck")] 
     public float playerHeight;
     public LayerMask whatIsGround;
     private bool _isGrounded;
+
+    [Header("Slope Handling")] 
+    public float maxSlopeAngle;
+    private RaycastHit _slopeHit;
+    private bool _exitingSlope;
     
     // Declaring reference variables
     private PlayerInput _playerInput;
-    private CharacterController _characterController;
+    // private CharacterController _characterController;
     private Animator _animator;
 
     public Transform orientation;
@@ -30,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
     private int _isWalkingHash;
     private int _isRunningHash;
     private int _isJumpingHash;
+    private int _isFallingHash;
 
     // Variables for storing player input values
     private Vector2 _currentMovementInput;
@@ -62,13 +71,14 @@ public class PlayerMovement : MonoBehaviour
     private float _maxJumpHeight = 0.6f;
     private float _maxJumpTime = 0.9f;
     private bool _isJumping;
+    private bool _isPickupPressed;
 
     // Awake is called before Start
     private void Awake()
     {
         // Init set reference variables
         _playerInput = new PlayerInput();
-        _characterController = GetComponent<CharacterController>();
+        // _characterController = GetComponent<CharacterController>();
         _animator = GetComponent<Animator>();
         
         _rigidbody = GetComponent<Rigidbody>();
@@ -77,6 +87,7 @@ public class PlayerMovement : MonoBehaviour
         _isWalkingHash = Animator.StringToHash("isWalking");
         _isRunningHash = Animator.StringToHash("isRunning");
         _isJumpingHash = Animator.StringToHash("isJumping");
+        _isFallingHash = Animator.StringToHash("isFalling");
 
         // Checking for when input in sent from keyboard.
         _playerInput.Stage3.Move.started += OnMovementInput;
@@ -92,8 +103,13 @@ public class PlayerMovement : MonoBehaviour
         // Player Input callbacks for Jumping
         _playerInput.Stage3.Jump.started += OnJump;
         _playerInput.Stage3.Jump.canceled += OnJump;
+
+        _playerInput.Stage3.Pickup.started += OnPickup;
+        _playerInput.Stage3.Pickup.canceled += OnPickup;
         
         SetupJumpVariables();
+        
+        OnEnable();
     }
 
     void SetupJumpVariables()
@@ -124,19 +140,51 @@ public class PlayerMovement : MonoBehaviour
         _isJumpPressed = context.ReadValueAsButton();
     }
 
+    void OnPickup(InputAction.CallbackContext context)
+    {
+        _isPickupPressed = context.ReadValueAsButton();
+    }
+
+    void HandleAudio()
+    {
+        if (_isMovementPressed && _isGrounded)
+        {
+            if (!hasLegs)
+            {
+                playerAudio.PlayHoverSfx();
+            }
+            else if (hasLegs)
+            {
+                playerAudio.PlayWalkSfx();
+            }
+        }
+        else if (!_isMovementPressed || !_isGrounded)
+        {
+            playerAudio.StopHoverWalkSfx();
+        }
+    }
+    
     void HandleAnimation()
     {
         bool isWalking = _animator.GetBool(_isWalkingHash);
         bool isRunning = _animator.GetBool(_isRunningHash);
-        // bool isJumping = animator.GetBool(isJumpingHash);
+        // bool isFalling = _animator.GetBool(_isFallingHash);
+        // bool isJumping = _animator.GetBool(_isJumpingHash);
 
         // Plays walking animation if movement input are pressed...
-        if (_isMovementPressed && !isWalking)
+        if (_isMovementPressed && _isGrounded && !isWalking)
         {
             _animator.SetBool(_isWalkingHash, true);
+            
+            // // Plays different audio depending on player's stage.
+            // if (!hasLegs)
+            // {
+            //     playerAudio.PlayHoverSfx();
+            // }
+
         }
         // ...Stops walking animation if there's no movement input being pressed.
-        else if (!_isMovementPressed && isWalking)
+        else if ((!_isMovementPressed || !_isGrounded) && isWalking)
         {
             _animator.SetBool(_isWalkingHash, false);
         }
@@ -145,12 +193,12 @@ public class PlayerMovement : MonoBehaviour
         if (hasLegs)
         {
             // Running animation if Run button is pressed but player wasn't running prior.
-            if ((_isMovementPressed && _isRunPressed) && !isRunning)
+            if ((_isMovementPressed && _isRunPressed && _isGrounded) && !isRunning && hasArms)
             {
                 _animator.SetBool(_isRunningHash, true);
             }
             // Stops running animation if either movement or run button were let go while "running" prior.
-            else if ((!_isMovementPressed || !_isRunPressed) && isRunning)
+            else if ((!_isMovementPressed || !_isRunPressed || !_isGrounded) && isRunning && hasArms)
             {
                 _animator.SetBool(_isRunningHash,false);
             }
@@ -184,10 +232,10 @@ public class PlayerMovement : MonoBehaviour
     void HandleGravity()
     {
         bool isFalling = _currentMovement.y <= 0.0f || (!_isJumpPressed);
-        float fallMultiplier = 1.5f;
+        float fallMultiplier = 2.0f;
         
         // Creating reasonable gravity whenever player is in the air or on the ground.
-        if (_characterController.isGrounded)
+        if (_isGrounded)
         {
             if (_isJumpAnimating)
             {
@@ -202,7 +250,7 @@ public class PlayerMovement : MonoBehaviour
         {
             float prevYVelocity = _currentMovement.y;
             _currentMovement.y = _currentMovement.y + (_gravity * fallMultiplier * Time.deltaTime);
-            _appliedMovement.y = Mathf.Max((prevYVelocity + _currentMovement.y) * 0.5f, -20.0f);
+            _appliedMovement.y = Mathf.Max((prevYVelocity + _currentMovement.y) * 0.5f, -40.0f);
             
             // currentMovement.y = nextYVelocity;
             // currentRunMovement.y = nextYVelocity;
@@ -229,11 +277,21 @@ public class PlayerMovement : MonoBehaviour
     {
         if (hasLegs)
         {
-            if (_isJumpPressed && !_isJumping && _characterController.isGrounded)
+            if (_isJumpPressed && !_isJumping && _isGrounded)
             {
+                // Changes animation to be jumping.
                 _animator.SetBool(_isJumpingHash, true);
                 _isJumpAnimating = true;
                 _isJumping = true;
+                _exitingSlope = true;
+                
+                // Reset Y Velocity
+                // _rigidbody.velocity = new Vector3(_rigidbody.maxAngularVelocity, 0.0f, _rigidbody.velocity.z);
+                
+                // Performs jump
+                _rigidbody.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+                
+                playerAudio.PlayJumpSfx();
                 
                 // // New Velocity Verlet Implementation 
                 // float prevYVelocity = currentMovement.y;
@@ -244,12 +302,16 @@ public class PlayerMovement : MonoBehaviour
                 // currentRunMovement.y = nextYVelocity;
                 
                 // Old Inconsistent Method
-                _currentMovement.y = _initialJumpVelocity;
-                _appliedMovement.y = _initialJumpVelocity;
+                // _currentMovement.y = _initialJumpVelocity;
+                // _appliedMovement.y = _initialJumpVelocity;
+
             }
-            else if (!_isJumpPressed && _isJumping && _characterController.isGrounded)
+            else if (!_isJumpPressed && _isJumping && !_isGrounded)
             {
+                // _animator.SetBool(_isJumpingHash, false);
+                // _isJumpAnimating = false;
                 _isJumping = false;
+                _exitingSlope = false;
             }
         }
     }
@@ -269,9 +331,24 @@ public class PlayerMovement : MonoBehaviour
 
             // Aligns Player movement with camera.
             _appliedMovement = orientation.forward * _currentRunMovement.z + orientation.right * _currentRunMovement.x;
-            
-            
-            _rigidbody.AddForce(_appliedMovement.normalized * ((speed * runMultiplier) * 100.0f), ForceMode.Force);
+
+            if (OnSlope() && !_exitingSlope)
+            {
+                _rigidbody.AddForce(GetSlopeMoveDirection() * ((speed * runMultiplier) * 100.0f), ForceMode.Force);
+            }
+
+            if (_isGrounded)
+            {
+                _rigidbody.AddForce(_appliedMovement.normalized * ((speed * runMultiplier) * 100.0f), ForceMode.Force);
+            } 
+            else if (!_isGrounded)
+            {
+                _rigidbody.AddForce(_appliedMovement.normalized * ((speed * runMultiplier) * 100.0f * airMultiplier), ForceMode.Force);
+                
+            }
+
+            // Turns off gravity when on slopes to prevent sliding.
+            _rigidbody.useGravity = !OnSlope();
         }
         else
         {
@@ -280,27 +357,169 @@ public class PlayerMovement : MonoBehaviour
             _appliedMovement.z = _currentMovement.z;
             
             _appliedMovement = orientation.forward * _currentMovement.z + orientation.right * _currentMovement.x;
+
+            if (OnSlope() && !_exitingSlope)
+            {
+                _rigidbody.AddForce(GetSlopeMoveDirection() * (speed * 100.0f), ForceMode.Force);
+
+                if (_rigidbody.velocity.y > 0)
+                    _rigidbody.AddForce(Vector3.down * 100.0f, ForceMode.Force);
+            }
             
-            _rigidbody.AddForce(_appliedMovement.normalized * (speed * 100.0f), ForceMode.Force);
+            if (_isGrounded)
+            {
+                _rigidbody.AddForce(_appliedMovement.normalized * (speed * 100.0f), ForceMode.Force);
+            } 
+            else if (!_isGrounded)
+            {
+                _rigidbody.AddForce(_appliedMovement.normalized * (speed * 100.0f * airMultiplier), ForceMode.Force);
+                
+            }
+            
+            // Turns off gravity when on slopes to prevent sliding.
+            _rigidbody.useGravity = !OnSlope();
         }
     }
 
     void HandleSpeed()
     {
-        Vector3 flatVel = new Vector3(_rigidbody.velocity.x, 0.0f, _rigidbody.velocity.z);
         
-        // Limiting velocity when breaching normal speed.
-        if (flatVel.magnitude > maxSpeed)
+        // Limiting max speed on and off slopes.
+        if (OnSlope())
         {
-            Vector3 limitedVel = flatVel.normalized * speed;
-            _rigidbody.velocity = new Vector3(limitedVel.x, _rigidbody.velocity.y, limitedVel.z);
+            if (_rigidbody.velocity.magnitude > maxSpeed)
+            {
+                _rigidbody.velocity = _rigidbody.velocity.normalized * speed;
+            }
+        }
+        else
+        {
+            var velocity = _rigidbody.velocity;
+            Vector3 flatVel = new Vector3(velocity.x, 0.0f, velocity.z);
+
+            // Limiting velocity when breaching normal speed.
+            if (flatVel.magnitude > maxSpeed)
+            {
+                Vector3 limitedVel = flatVel.normalized * speed;
+                _rigidbody.velocity = new Vector3(limitedVel.x, _rigidbody.velocity.y, limitedVel.z);
+            }
+        }
+        
+
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (_isPickupPressed)
+        {
+            if (other.CompareTag("PlayerHead") && !hasHead)
+            {
+
+                // PlayUIFadeAnimation
+                StartCoroutine(PickupHead());
+            } 
+            else if (other.CompareTag("PlayerLegs") && hasHead && !hasLegs)
+            {
+                OnDisable();
+                hasLegs = true;
+                playerAudio.PlayPickup2Sfx();
+                // PlayUIFadeAnimation
+                StartCoroutine(PickupLegs());
+            } 
+            else if (other.CompareTag("PlayerArms") && hasHead && hasLegs && !hasArms)
+            {
+                OnDisable();
+                hasArms = true;
+                playerAudio.PlayPickup3Sfx();
+                // PlayUIFadeAnimation
+                StartCoroutine(PickupArms());
+            }
+            else if (other.CompareTag("PlayerFinal"))
+            {
+                OnDisable();
+                hasArms = true;
+                playerAudio.PlayPickupFinalSfx();
+                // PlayUIFadeAnimation
+                StartCoroutine(PickupFinal());
+            }
+        }
+        else
+        {
+            return;
         }
     }
+
+    public IEnumerator PickupHead()
+    {
+        OnDisable();
+        hasHead = true;
+        playerAudio.PlayPickup1Sfx();
+        playerAudio.MuteWorldMusic();
+        yield return new WaitForSeconds(5.0f);
+        SceneManager.LoadScene("World1_PlayerStage2");
+    }
     
+    public IEnumerator PickupLegs()
+    {
+        OnDisable();
+        hasHead = true;
+        playerAudio.PlayPickup2Sfx();
+        playerAudio.MuteWorldMusic();
+        yield return new WaitForSeconds(5.0f);
+        SceneManager.LoadScene("World1_PlayerStage3");
+    }
+    
+    public IEnumerator PickupArms()
+    {
+        OnDisable();
+        hasHead = true;
+        playerAudio.PlayPickup3Sfx();
+        playerAudio.MuteWorldMusic();
+        yield return new WaitForSeconds(5.0f);
+        OnEnable();
+        SceneManager.LoadScene("World1_PlayerStage4");
+    }
+    
+    public IEnumerator PickupFinal()
+    {
+        OnDisable();
+        hasHead = true;
+        playerAudio.PlayPickupFinalSfx();
+        playerAudio.MuteWorldMusic();
+        yield return new WaitForSeconds(10.0f);
+        OnEnable();
+        SceneManager.LoadScene("EndScene");
+    }
+
+    void HandlePickup()
+    {
+        // if(!hasHead && collides with head && _isPickupPressed)
+        // {
+        //     Instantiate(Stage2robot);
+        //     hasHead = true;
+        // } else if(!hasLegs && collides with legs && _isPickupPressed)
+        // {
+        //     insintsflegs verio;
+        //     hasLegs = true;
+        // } else if(!hasArms && collides with arms && _isPickupPressed)
+        // {
+        //     Instantiate(stage4);
+        // }
+        
+    }
+
+    private void FixedUpdate()
+    {
+        HandleMove();
+        
+    }
+
     // Update is called once per frame
     void Update()
     {
+        HandleSpeed();
         HandleAnimation();
+        HandleAudio();
         HandleRotation();
 
         // if (hasLegs && _isRunPressed)
@@ -320,12 +539,11 @@ public class PlayerMovement : MonoBehaviour
         // _characterController.Move(_appliedMovement * (Time.deltaTime * speed));
 
         _isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
-        
-        HandleMove();
-        
+
         // Changing drag depending on whether in the air or on ground.
         if (_isGrounded)
         {
+            
             _rigidbody.drag = groundDrag;
             // Debug.Log("XP-Lora-072 Ground State: " + _isGrounded);
         }
@@ -362,6 +580,24 @@ public class PlayerMovement : MonoBehaviour
         return vectorRotatedToCameraSpace;
     }
 
+    private bool OnSlope()
+    {
+        if (Physics.Raycast(transform.position,
+                Vector3.down, out _slopeHit,
+                playerHeight * 0.5f + 0.3f))
+        {
+            float angle = Vector3.Angle(Vector3.up, _slopeHit.normal);
+            return angle < maxSlopeAngle && angle != 0;
+        }
+
+        return false;
+    }
+
+    Vector3 GetSlopeMoveDirection()
+    {
+        return Vector3.ProjectOnPlane(_appliedMovement, _slopeHit.normal);
+    }
+    
     private void OnEnable()
     {
         _playerInput.Stage3.Enable();

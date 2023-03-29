@@ -9,9 +9,33 @@ EditorBuildSettings:
     path: Assets/Scenes/StartScreen.unity
     guid: ee14e12b6c9947043848e99fd9f3a4b0
   - enabled: 0
-    path: Assets/Scenes/_prototypeScene.unity
-    guid: 556a432f3197cc64b80dbbd0bd154030
-  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/World1_PlayerStage1.unity
+    guid: eab46770100b31344bdbfe565530791f
+  - enabled: 1
+    path: Assets/Scenes/World1_PlayerStage2.unity
+    guid: 3039a144718c52141b16cd12b6d3328f
+  - enabled: 1
+    path: Assets/Scenes/World1_PlayerStage3.unity
+    guid: 4672e8926f9b33f4cb4ae44db990e76f
+  - enabled: 1
+    path: Assets/Scenes/World1_PlayerStage4.unity
+    guid: 9a21e4bcd9daaa3418c2a83102a1b061
+  - enabled: 0
+    path: Assets/Scenes/Prototype/_prototypeSceneStage1.unity
+    guid: 556a432f3197cc64b80dbbd0bd154030
+  - enabled: 0
+    path: Assets/Scenes/Prototype/_prototypeSceneStage2.unity
+    guid: a1446f2d63db8ad418c78f46ca8b0a83
+  - enabled: 0
+    path: Assets/Scenes/Prototype/_prototypeSceneStage3.unity
+    guid: ae2f677d3ea35b54eaaa36b34c35fa07
+  - enabled: 0
+    path: Assets/Scenes/Prototype/_prototypeSceneStage4.unity
+    guid: 3083f7da243771e4ba9f5d6ab4b473d8
+  - enabled: 1
+    path: Assets/Scenes/EndScene.unity
+    guid: a182a95e83b36ab44bdb1ccc3a55c256
   m_configObjects: {}

@@ -35,6 +35,15 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": ""NormalizeVector2"",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Pickup"",
+                    ""type"": ""Button"",
+                    ""id"": ""d5e9b175-f2d8-458f-a924-9201289f8880"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -103,6 +112,28 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b5eafee2-a854-4006-aae9-82b362efd5a1"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""56783143-6c31-4efe-a829-e5ff4118df4b"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -132,6 +163,15 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""name"": ""Jump"",
                     ""type"": ""Button"",
                     ""id"": ""3b483781-e26c-41b6-b3d5-2bbbde137cad"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pickup"",
+                    ""type"": ""Button"",
+                    ""id"": ""2bd8111e-1e30-419a-9e1e-e7685dfe8722"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -248,6 +288,28 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3b5bd6ff-0eab-46e3-87ac-21417d396c8a"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d5c70669-778b-4ba5-aa12-d1527e84a484"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -286,6 +348,15 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""name"": ""Dash"",
                     ""type"": ""Button"",
                     ""id"": ""66ef8885-a2e6-4777-aae2-f7def91fa5e3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pickup"",
+                    ""type"": ""Button"",
+                    ""id"": ""1c454c9c-59c6-446d-8d76-d0589113debf"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -424,6 +495,28 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0052a952-bcb8-4a5f-8257-30d91cda30c0"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c89002ae-5938-4f80-a344-9140ebf6a3ce"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -433,17 +526,20 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         // Stage1
         m_Stage1 = asset.FindActionMap("Stage1", throwIfNotFound: true);
         m_Stage1_Move = m_Stage1.FindAction("Move", throwIfNotFound: true);
+        m_Stage1_Pickup = m_Stage1.FindAction("Pickup", throwIfNotFound: true);
         // Stage2
         m_Stage2 = asset.FindActionMap("Stage2", throwIfNotFound: true);
         m_Stage2_Move = m_Stage2.FindAction("Move", throwIfNotFound: true);
         m_Stage2_Run = m_Stage2.FindAction("Run", throwIfNotFound: true);
         m_Stage2_Jump = m_Stage2.FindAction("Jump", throwIfNotFound: true);
+        m_Stage2_Pickup = m_Stage2.FindAction("Pickup", throwIfNotFound: true);
         // Stage3
         m_Stage3 = asset.FindActionMap("Stage3", throwIfNotFound: true);
         m_Stage3_Move = m_Stage3.FindAction("Move", throwIfNotFound: true);
         m_Stage3_Run = m_Stage3.FindAction("Run", throwIfNotFound: true);
         m_Stage3_Jump = m_Stage3.FindAction("Jump", throwIfNotFound: true);
         m_Stage3_Dash = m_Stage3.FindAction("Dash", throwIfNotFound: true);
+        m_Stage3_Pickup = m_Stage3.FindAction("Pickup", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -504,11 +600,13 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Stage1;
     private IStage1Actions m_Stage1ActionsCallbackInterface;
     private readonly InputAction m_Stage1_Move;
+    private readonly InputAction m_Stage1_Pickup;
     public struct Stage1Actions
     {
         private @PlayerInput m_Wrapper;
         public Stage1Actions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Stage1_Move;
+        public InputAction @Pickup => m_Wrapper.m_Stage1_Pickup;
         public InputActionMap Get() { return m_Wrapper.m_Stage1; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -521,6 +619,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Move.started -= m_Wrapper.m_Stage1ActionsCallbackInterface.OnMove;
                 @Move.performed -= m_Wrapper.m_Stage1ActionsCallbackInterface.OnMove;
                 @Move.canceled -= m_Wrapper.m_Stage1ActionsCallbackInterface.OnMove;
+                @Pickup.started -= m_Wrapper.m_Stage1ActionsCallbackInterface.OnPickup;
+                @Pickup.performed -= m_Wrapper.m_Stage1ActionsCallbackInterface.OnPickup;
+                @Pickup.canceled -= m_Wrapper.m_Stage1ActionsCallbackInterface.OnPickup;
             }
             m_Wrapper.m_Stage1ActionsCallbackInterface = instance;
             if (instance != null)
@@ -528,6 +629,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
+                @Pickup.started += instance.OnPickup;
+                @Pickup.performed += instance.OnPickup;
+                @Pickup.canceled += instance.OnPickup;
             }
         }
     }
@@ -539,6 +643,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_Stage2_Move;
     private readonly InputAction m_Stage2_Run;
     private readonly InputAction m_Stage2_Jump;
+    private readonly InputAction m_Stage2_Pickup;
     public struct Stage2Actions
     {
         private @PlayerInput m_Wrapper;
@@ -546,6 +651,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Stage2_Move;
         public InputAction @Run => m_Wrapper.m_Stage2_Run;
         public InputAction @Jump => m_Wrapper.m_Stage2_Jump;
+        public InputAction @Pickup => m_Wrapper.m_Stage2_Pickup;
         public InputActionMap Get() { return m_Wrapper.m_Stage2; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -564,6 +670,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Jump.started -= m_Wrapper.m_Stage2ActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_Stage2ActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_Stage2ActionsCallbackInterface.OnJump;
+                @Pickup.started -= m_Wrapper.m_Stage2ActionsCallbackInterface.OnPickup;
+                @Pickup.performed -= m_Wrapper.m_Stage2ActionsCallbackInterface.OnPickup;
+                @Pickup.canceled -= m_Wrapper.m_Stage2ActionsCallbackInterface.OnPickup;
             }
             m_Wrapper.m_Stage2ActionsCallbackInterface = instance;
             if (instance != null)
@@ -577,6 +686,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @Pickup.started += instance.OnPickup;
+                @Pickup.performed += instance.OnPickup;
+                @Pickup.canceled += instance.OnPickup;
             }
         }
     }
@@ -589,6 +701,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_Stage3_Run;
     private readonly InputAction m_Stage3_Jump;
     private readonly InputAction m_Stage3_Dash;
+    private readonly InputAction m_Stage3_Pickup;
     public struct Stage3Actions
     {
         private @PlayerInput m_Wrapper;
@@ -597,6 +710,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         public InputAction @Run => m_Wrapper.m_Stage3_Run;
         public InputAction @Jump => m_Wrapper.m_Stage3_Jump;
         public InputAction @Dash => m_Wrapper.m_Stage3_Dash;
+        public InputAction @Pickup => m_Wrapper.m_Stage3_Pickup;
         public InputActionMap Get() { return m_Wrapper.m_Stage3; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -618,6 +732,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Dash.started -= m_Wrapper.m_Stage3ActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_Stage3ActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_Stage3ActionsCallbackInterface.OnDash;
+                @Pickup.started -= m_Wrapper.m_Stage3ActionsCallbackInterface.OnPickup;
+                @Pickup.performed -= m_Wrapper.m_Stage3ActionsCallbackInterface.OnPickup;
+                @Pickup.canceled -= m_Wrapper.m_Stage3ActionsCallbackInterface.OnPickup;
             }
             m_Wrapper.m_Stage3ActionsCallbackInterface = instance;
             if (instance != null)
@@ -634,6 +751,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
+                @Pickup.started += instance.OnPickup;
+                @Pickup.performed += instance.OnPickup;
+                @Pickup.canceled += instance.OnPickup;
             }
         }
     }
@@ -641,12 +761,14 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     public interface IStage1Actions
     {
         void OnMove(InputAction.CallbackContext context);
+        void OnPickup(InputAction.CallbackContext context);
     }
     public interface IStage2Actions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnPickup(InputAction.CallbackContext context);
     }
     public interface IStage3Actions
     {
@@ -654,5 +776,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         void OnRun(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
+        void OnPickup(InputAction.CallbackContext context);
     }
 }
