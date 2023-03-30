@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 public class StartMenu : MonoBehaviour
 {
     public AudioManager audioManager;
+    
+    public Animator transition;
 
     public void StartGame()
     {
@@ -15,6 +17,7 @@ public class StartMenu : MonoBehaviour
     private IEnumerator StartGameCo()
     {
         // Play UI FadeIn Anim
+        // transition.SetTrigger("Start");
         yield return new WaitForSeconds(4f);
         SceneManager.LoadScene("World1_PlayerStage1");
     }

@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
     public AudioManager audioManager;
-
+    
     public void StartGame()
     {
         StartCoroutine(StartGameCo());
