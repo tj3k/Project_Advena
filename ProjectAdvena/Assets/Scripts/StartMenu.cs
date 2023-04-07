@@ -9,6 +9,12 @@ public class StartMenu : MonoBehaviour
     
     public Animator transition;
 
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+    }
+    
     public void StartGame()
     {
         StartCoroutine(StartGameCo());

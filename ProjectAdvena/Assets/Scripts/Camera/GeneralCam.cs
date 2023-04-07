@@ -51,13 +51,7 @@ public class GeneralCam : MonoBehaviour
     {
         _currentMovementInput = context.ReadValue<Vector2>();
     }
-
-    private void Start()
-    {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-    }
-
+    
     private void Update()
     {
         // Rotates Orientation of Camera

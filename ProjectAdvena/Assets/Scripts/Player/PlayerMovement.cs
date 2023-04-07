@@ -486,7 +486,7 @@ public class PlayerMovement : MonoBehaviour
         hasHead = true;
         playerAudio.PlayPickupFinalSfx();
         playerAudio.MuteWorldMusic();
-        yield return new WaitForSeconds(10.0f);
+        yield return new WaitForSeconds(7.5f);
         OnEnable();
         SceneManager.LoadScene("EndScene");
     }
